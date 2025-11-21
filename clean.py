@@ -1,0 +1,563 @@
+#!/usr/bin/env python3
+"""
+Code Cleaner - Professional code cleaning and documentation tool
+Supports: Python, JavaScript, TypeScript, Java, C, C++, Go, Rust, PHP
+"""
+
+import re
+import sys
+import os
+import subprocess
+from pathlib import Path
+from typing import List, Optional, Dict
+import json
+import textwrap
+
+# Language configurations
+LANGUAGE_CONFIG = {
+    'py': {
+        'name': 'Python',
+        'single_comment': '#',
+        'multi_start': '"""',
+        'multi_end': '"""',
+        'extensions': ['.py'],
+        'indent': '    ',
+    },
+    'js': {
+        'name': 'JavaScript',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.js', '.jsx'],
+        'indent': '  ',
+    },
+    'ts': {
+        'name': 'TypeScript',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.ts', '.tsx'],
+        'indent': '  ',
+    },
+    'java': {
+        'name': 'Java',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.java'],
+        'indent': '    ',
+    },
+    'c': {
+        'name': 'C/C++',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.c', '.cpp', '.h', '.hpp', '.cc', '.cxx'],
+        'indent': '    ',
+    },
+    'go': {
+        'name': 'Go',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.go'],
+        'indent': '    ',
+    },
+    'rs': {
+        'name': 'Rust',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.rs'],
+        'indent': '    ',
+    },
+    'php': {
+        'name': 'PHP',
+        'single_comment': '//',
+        'multi_start': '/*',
+        'multi_end': '*/',
+        'extensions': ['.php'],
+        'indent': '    ',
+    },
+}
+
+
+class CommentRemover:
+    """Removes comments while preserving code structure and indentation"""
+    
+    def __init__(self, lang_code: str):
+        self.config = LANGUAGE_CONFIG.get(lang_code, LANGUAGE_CONFIG['py'])
+        self.single = self.config['single_comment']
+        self.multi_start = self.config['multi_start']
+        self.multi_end = self.config['multi_end']
+    
+    def remove_comments(self, code: str) -> str:
+        """Remove comments while preserving exact indentation"""
+        lines = code.split('\n')
+        result = []
+        in_multi = False
+        
+        for line in lines:
+            # Preserve empty lines
+            if not line.strip():
+                result.append(line)
+                continue
+            
+            # Get original indentation
+            indent = len(line) - len(line.lstrip())
+            leading_space = line[:indent]
+            
+            # Check if in multiline comment
+            if in_multi:
+                if self.multi_end in line:
+                    in_multi = False
+                    # Check if there's code after the comment end
+                    end_idx = line.find(self.multi_end) + len(self.multi_end)
+                    remaining = line[end_idx:].strip()
+                    if remaining:
+                        result.append(leading_space + remaining)
+                continue
+            
+            # Check for multiline comment start
+            if self.multi_start in line:
+                before_comment = line[:line.find(self.multi_start)].strip()
+                if self.multi_end in line:
+                    # Single-line multiline comment
+                    end_idx = line.find(self.multi_end) + len(self.multi_end)
+                    after_comment = line[end_idx:].strip()
+                    cleaned = (before_comment + ' ' + after_comment).strip()
+                    if cleaned:
+                        result.append(leading_space + cleaned)
+                else:
+                    # Start of multiline comment
+                    in_multi = True
+                    if before_comment:
+                        result.append(leading_space + before_comment)
+                continue
+            
+            # Remove single-line comments while preserving indentation
+            cleaned = self._remove_single_line_comment(line)
+            if cleaned.strip():  # Only add if not empty
+                result.append(cleaned)
+        
+        return '\n'.join(result)
+    
+    def _remove_single_line_comment(self, line: str) -> str:
+        """Remove single-line comment while preserving indentation"""
+        in_string = False
+        string_char = None
+        
+        for i in range(len(line)):
+            char = line[i]
+            
+            # Track strings
+            if char in ('"', "'") and (i == 0 or line[i-1] != '\\'):
+                if not in_string:
+                    in_string = True
+                    string_char = char
+                elif char == string_char:
+                    in_string = False
+            
+            # Check for comment
+            if not in_string and line[i:i+len(self.single)] == self.single:
+                return line[:i].rstrip()
+        
+        return line
+
+
+class CommentAdder:
+    """Adds intelligent comments to code using AI"""
+    
+    def __init__(self, lang_code: str):
+        self.lang = lang_code
+        self.config = LANGUAGE_CONFIG.get(lang_code, LANGUAGE_CONFIG['py'])
+    
+    def add_comments(self, code: str) -> str:
+        """Add helpful comments to code"""
+        lines = code.split('\n')
+        result = []
+        
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            stripped = line.strip()
+            
+            # Skip empty lines and existing comments
+            if not stripped or stripped.startswith(self.config['single_comment']):
+                result.append(line)
+                i += 1
+                continue
+            
+            indent = len(line) - len(line.lstrip())
+            leading_space = line[:indent]
+            
+            # Add comment for function/class definitions
+            if self._is_function_def(stripped) or self._is_class_def(stripped):
+                comment = self._generate_def_comment(stripped)
+                if comment:
+                    result.append(f"{leading_space}{self.config['single_comment']} {comment}")
+            
+            # Add comment for complex logic
+            elif self._is_complex_line(stripped):
+                comment = self._generate_logic_comment(stripped)
+                if comment:
+                    result.append(f"{leading_space}{self.config['single_comment']} {comment}")
+            
+            result.append(line)
+            i += 1
+        
+        return '\n'.join(result)
+    
+    def _is_function_def(self, line: str) -> bool:
+        """Check if line is a function definition"""
+        patterns = [
+            r'^def\s+\w+',  # Python
+            r'^function\s+\w+',  # JavaScript
+            r'^(public|private|protected)?\s*(static)?\s*\w+\s+\w+\s*\(',  # Java/C++
+            r'^func\s+\w+',  # Go
+            r'^fn\s+\w+',  # Rust
+        ]
+        return any(re.match(p, line) for p in patterns)
+    
+    def _is_class_def(self, line: str) -> bool:
+        """Check if line is a class definition"""
+        patterns = [
+            r'^class\s+\w+',  # Python/Java/C++
+            r'^(public|private)?\s*class\s+\w+',  # Java
+            r'^struct\s+\w+',  # C/Rust
+        ]
+        return any(re.match(p, line) for p in patterns)
+    
+    def _is_complex_line(self, line: str) -> bool:
+        """Check if line contains complex logic"""
+        complex_keywords = ['if', 'for', 'while', 'try', 'catch', 'switch', 'case']
+        return any(line.startswith(kw) for kw in complex_keywords)
+    
+    def _generate_def_comment(self, line: str) -> str:
+        """Generate comment for function/class definition"""
+        if 'class' in line.lower():
+            name = re.search(r'class\s+(\w+)', line)
+            return f"{name.group(1)} class definition" if name else "Class definition"
+        elif any(kw in line for kw in ['def', 'function', 'func', 'fn']):
+            name = re.search(r'(?:def|function|func|fn)\s+(\w+)', line)
+            return f"Function: {name.group(1)}" if name else "Function definition"
+        return ""
+    
+    def _generate_logic_comment(self, line: str) -> str:
+        """Generate comment for logic statements"""
+        if line.startswith('if'):
+            return "Check condition"
+        elif line.startswith('for'):
+            return "Loop through items"
+        elif line.startswith('while'):
+            return "Loop while condition is true"
+        elif line.startswith('try'):
+            return "Try block for error handling"
+        return ""
+
+
+class SmartFormatter:
+    """Intelligent code formatting that preserves structure"""
+    
+    @staticmethod
+    def format_code(code: str, lang: str) -> str:
+        """Format code based on language"""
+        if lang == 'py':
+            return SmartFormatter._format_python(code)
+        elif lang in ['js', 'ts']:
+            return SmartFormatter._format_javascript(code)
+        else:
+            return SmartFormatter._format_generic(code, lang)
+    
+    @staticmethod
+    def _format_python(code: str) -> str:
+        """Format Python code"""
+        try:
+            import black
+            mode = black.Mode(line_length=88)
+            return black.format_str(code, mode=mode)
+        except:
+            pass
+        
+        try:
+            import autopep8
+            return autopep8.fix_code(code, options={'aggressive': 1})
+        except:
+            pass
+        
+        return SmartFormatter._format_generic(code, 'py')
+    
+    @staticmethod
+    def _format_javascript(code: str) -> str:
+        """Format JavaScript/TypeScript"""
+        try:
+            result = subprocess.run(
+                ['npx', 'prettier', '--parser', 'babel', '--stdin-filepath', 'temp.js'],
+                input=code.encode(),
+                capture_output=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                return result.stdout.decode()
+        except:
+            pass
+        
+        return SmartFormatter._format_generic(code, 'js')
+    
+    @staticmethod
+    def _format_generic(code: str, lang: str) -> str:
+        """Basic formatting that preserves indentation"""
+        indent_char = LANGUAGE_CONFIG[lang]['indent']
+        lines = code.split('\n')
+        
+        # Just clean up trailing whitespace and excessive blank lines
+        result = []
+        prev_blank = False
+        
+        for line in lines:
+            # Remove trailing whitespace
+            cleaned = line.rstrip()
+            
+            # Handle blank lines
+            if not cleaned:
+                if not prev_blank:
+                    result.append('')
+                    prev_blank = True
+            else:
+                result.append(cleaned)
+                prev_blank = False
+        
+        return '\n'.join(result)
+
+
+class QuickGit:
+    """Simple git operations"""
+    
+    @staticmethod
+    def auto_push(files: List[str], message: str = "Clean code") -> bool:
+        """One-command git add, commit, push"""
+        try:
+            for f in files:
+                subprocess.run(['git', 'add', f], check=True, capture_output=True)
+            subprocess.run(['git', 'commit', '-m', message], check=True, capture_output=True)
+            result = subprocess.run(['git', 'branch', '--show-current'], 
+                                  capture_output=True, text=True, check=True)
+            branch = result.stdout.strip()
+            subprocess.run(['git', 'push', 'origin', branch], check=True, capture_output=True)
+            return True
+        except:
+            return False
+
+
+class CodeCleaner:
+    """Main cleaner with professional output"""
+    
+    def __init__(self):
+        self.stats = {'processed': 0, 'skipped': 0, 'errors': 0}
+        self.processed_files = []
+    
+    def detect_language(self, file_path: Path) -> Optional[str]:
+        """Auto-detect language from file extension"""
+        ext = file_path.suffix.lower()
+        for lang_code, config in LANGUAGE_CONFIG.items():
+            if ext in config['extensions']:
+                return lang_code
+        return None
+    
+    def process_file(self, file_path: Path, mode: str = 'clean') -> bool:
+        """Process a single file"""
+        try:
+            lang = self.detect_language(file_path)
+            if not lang:
+                return False
+            
+            with open(file_path, 'r', encoding='utf-8') as f:
+                original = f.read()
+            
+            code = original
+            
+            # Process based on mode
+            if mode == 'clean':
+                remover = CommentRemover(lang)
+                code = remover.remove_comments(code)
+                code = SmartFormatter.format_code(code, lang)
+            
+            elif mode == 'add':
+                adder = CommentAdder(lang)
+                code = adder.add_comments(code)
+                code = SmartFormatter.format_code(code, lang)
+            
+            elif mode == 'format':
+                code = SmartFormatter.format_code(code, lang)
+            
+            elif mode == 'both':
+                remover = CommentRemover(lang)
+                code = remover.remove_comments(code)
+                code = SmartFormatter.format_code(code, lang)
+            
+            if code == original:
+                self.stats['skipped'] += 1
+                return False
+            
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(code)
+            
+            self.stats['processed'] += 1
+            self.processed_files.append(str(file_path))
+            print(f"✓ {file_path}")
+            return True
+            
+        except Exception as e:
+            self.stats['errors'] += 1
+            print(f"✗ {file_path}: {str(e)}")
+            return False
+    
+    def process_directory(self, path: Path, mode: str = 'clean') -> None:
+        """Process all supported files in directory"""
+        extensions = []
+        for config in LANGUAGE_CONFIG.values():
+            extensions.extend(config['extensions'])
+        
+        for ext in extensions:
+            for file in path.rglob(f'*{ext}'):
+                if file.is_file() and '.git' not in file.parts:
+                    self.process_file(file, mode)
+    
+    def show_stats(self):
+        """Display statistics"""
+        print(f"\n{'='*50}")
+        print(f"✓ Processed: {self.stats['processed']}")
+        print(f"○ Skipped: {self.stats['skipped']}")
+        if self.stats['errors'] > 0:
+            print(f"✗ Errors: {self.stats['errors']}")
+        print(f"{'='*50}")
+
+
+def interactive_mode():
+    """Interactive mode for easy use"""
+    print("\n" + "="*50)
+    print("🧹 CODE CLEANER - Interactive Mode")
+    print("="*50)
+    
+    path_input = input("\n📁 Path (press Enter for current folder): ").strip()
+    path = Path(path_input) if path_input else Path('.')
+    
+    if not path.exists():
+        print(f"❌ Path not found: {path}")
+        return
+    
+    print("\n🎯 What do you want to do?")
+    print("1. Remove comments + format (clean AI code)")
+    print("2. Add helpful comments (document code)")
+    print("3. Format only (no comment changes)")
+    mode_choice = input("Choose (1/2/3) [default: 1]: ").strip() or '1'
+    
+    mode_map = {'1': 'clean', '2': 'add', '3': 'format'}
+    mode = mode_map.get(mode_choice, 'clean')
+    
+    git_push = input("\n🚀 Push to GitHub? (y/n) [default: n]: ").strip().lower() == 'y'
+    
+    print(f"\n📋 Summary:")
+    print(f"   Path: {path}")
+    print(f"   Mode: {mode}")
+    print(f"   Git: {'Yes' if git_push else 'No'}")
+    
+    confirm = input("\n▶ Continue? (y/n) [default: y]: ").strip().lower()
+    if confirm == 'n':
+        print("Cancelled.")
+        return
+    
+    print(f"\n🔄 Processing...\n")
+    cleaner = CodeCleaner()
+    
+    if path.is_file():
+        cleaner.process_file(path, mode)
+    else:
+        cleaner.process_directory(path, mode)
+    
+    cleaner.show_stats()
+    
+    if git_push and cleaner.processed_files:
+        print("\n📤 Pushing to GitHub...")
+        if QuickGit.auto_push(cleaner.processed_files):
+            print("✓ Successfully pushed!")
+        else:
+            print("✗ Git push failed")
+
+
+def main():
+    """Main entry point"""
+    
+    if len(sys.argv) == 1:
+        interactive_mode()
+        return
+    
+    args = sys.argv[1:]
+    
+    if args[0] in ['help', '--help', '-h']:
+        print("""
+🧹 CODE CLEANER - Quick Commands
+
+INTERACTIVE:
+  clean                    Interactive mode (easiest!)
+
+QUICK COMMANDS:
+  clean .                  Remove comments + format
+  clean . add              Add helpful comments
+  clean . push             Clean and push to GitHub
+  clean file.py            Clean single file
+  clean file.py add        Add comments to file
+
+EXAMPLES:
+  clean                    # Interactive (recommended)
+  clean .                  # Clean current folder
+  clean app.py             # Clean one file
+  clean . add              # Add comments to document code
+  clean ./src push         # Clean and push to GitHub
+
+SUPPORTED: Python, JavaScript, TypeScript, Java, C/C++, Go, Rust, PHP
+        """)
+        return
+    
+    # Parse arguments
+    path = Path(args[0])
+    mode = 'clean'
+    git_push = False
+    
+    if len(args) > 1:
+        if 'add' in args[1]:
+            mode = 'add'
+        elif 'format' in args[1]:
+            mode = 'format'
+        elif 'push' in args[1]:
+            git_push = True
+    
+    if len(args) > 2 and 'push' in args[2]:
+        git_push = True
+    
+    if not path.exists():
+        print(f"❌ Path not found: {path}")
+        print("💡 Try: clean  (for interactive mode)")
+        return
+    
+    # Process
+    print(f"🔄 Processing {path}...\n")
+    cleaner = CodeCleaner()
+    
+    if path.is_file():
+        cleaner.process_file(path, mode)
+    else:
+        cleaner.process_directory(path, mode)
+    
+    cleaner.show_stats()
+    
+    if git_push and cleaner.processed_files:
+        print("\n📤 Pushing to GitHub...")
+        if QuickGit.auto_push(cleaner.processed_files):
+            print("✓ Successfully pushed!")
+        else:
+            print("✗ Git push failed")
+
+
+if __name__ == '__main__':
+    main()
