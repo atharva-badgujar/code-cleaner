@@ -96,71 +96,156 @@ class CommentRemover:
         lines = code.split('\n')
         result = []
         in_multi = False
+        in_string = False
+        string_char = None
         
-        for line in lines:
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            
             # Preserve empty lines
             if not line.strip():
                 result.append(line)
+                i += 1
                 continue
             
             # Get original indentation
             indent = len(line) - len(line.lstrip())
             leading_space = line[:indent]
+            stripped = line.strip()
             
-            # Check if in multiline comment
+            # If we're inside a multiline comment, check for end marker
             if in_multi:
                 if self.multi_end in line:
-                    in_multi = False
-                    # Check if there's code after the comment end
+                    # Found the end of multiline comment
                     end_idx = line.find(self.multi_end) + len(self.multi_end)
                     remaining = line[end_idx:].strip()
+                    in_multi = False
+                    
+                    # If there's code after the comment end, keep it
                     if remaining:
                         result.append(leading_space + remaining)
+                # Still in multiline comment, skip this line
+                i += 1
                 continue
             
-            # Check for multiline comment start
-            if self.multi_start in line:
-                before_comment = line[:line.find(self.multi_start)].strip()
-                if self.multi_end in line:
-                    # Single-line multiline comment
-                    end_idx = line.find(self.multi_end) + len(self.multi_end)
-                    after_comment = line[end_idx:].strip()
-                    cleaned = (before_comment + ' ' + after_comment).strip()
-                    if cleaned:
-                        result.append(leading_space + cleaned)
+            # Check if line contains multiline comment start
+            start_idx = self._find_comment_start(line)
+            
+            if start_idx != -1:
+                # Found multiline comment start
+                before_comment = line[:start_idx].rstrip()
+                
+                # Check if multiline comment ends on the same line
+                end_search_start = start_idx + len(self.multi_start)
+                end_idx = line.find(self.multi_end, end_search_start)
+                
+                if end_idx != -1:
+                    # Single-line multiline comment (e.g., /* comment */)
+                    after_comment = line[end_idx + len(self.multi_end):].lstrip()
+                    
+                    # Combine before and after, preserving indentation
+                    if before_comment and after_comment:
+                        result.append(leading_space + before_comment + ' ' + after_comment)
+                    elif before_comment:
+                        result.append(leading_space + before_comment)
+                    elif after_comment:
+                        result.append(leading_space + after_comment)
+                    # else: entire line was a comment, skip it
                 else:
-                    # Start of multiline comment
+                    # Start of multiline comment that spans multiple lines
                     in_multi = True
+                    
+                    # Keep any code before the comment
                     if before_comment:
                         result.append(leading_space + before_comment)
+                
+                i += 1
                 continue
             
-            # Remove single-line comments while preserving indentation
+            # Remove single-line comments
             cleaned = self._remove_single_line_comment(line)
-            if cleaned.strip():  # Only add if not empty
+            if cleaned.strip():  # Only add if not empty after removing comment
                 result.append(cleaned)
+            
+            i += 1
         
         return '\n'.join(result)
     
-    def _remove_single_line_comment(self, line: str) -> str:
-        """Remove single-line comment while preserving indentation"""
+    def _find_comment_start(self, line: str) -> int:
+        """Find the start of a multiline comment, avoiding strings"""
         in_string = False
         string_char = None
+        escaped = False
         
-        for i in range(len(line)):
+        i = 0
+        while i < len(line):
             char = line[i]
             
+            # Handle escape sequences
+            if escaped:
+                escaped = False
+                i += 1
+                continue
+            
+            if char == '\\':
+                escaped = True
+                i += 1
+                continue
+            
             # Track strings
-            if char in ('"', "'") and (i == 0 or line[i-1] != '\\'):
+            if char in ('"', "'"):
                 if not in_string:
                     in_string = True
                     string_char = char
                 elif char == string_char:
                     in_string = False
+                    string_char = None
             
-            # Check for comment
+            # Check for multiline comment start (only outside strings)
+            if not in_string:
+                if line[i:i+len(self.multi_start)] == self.multi_start:
+                    return i
+            
+            i += 1
+        
+        return -1
+    
+    def _remove_single_line_comment(self, line: str) -> str:
+        """Remove single-line comment while preserving indentation"""
+        in_string = False
+        string_char = None
+        escaped = False
+        
+        i = 0
+        while i < len(line):
+            char = line[i]
+            
+            # Handle escape sequences
+            if escaped:
+                escaped = False
+                i += 1
+                continue
+            
+            if char == '\\':
+                escaped = True
+                i += 1
+                continue
+            
+            # Track strings
+            if char in ('"', "'"):
+                if not in_string:
+                    in_string = True
+                    string_char = char
+                elif char == string_char:
+                    in_string = False
+                    string_char = None
+            
+            # Check for single-line comment (only outside strings)
             if not in_string and line[i:i+len(self.single)] == self.single:
                 return line[:i].rstrip()
+            
+            i += 1
         
         return line
 
