@@ -7,6 +7,8 @@
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+<img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
+
 ## Why Code Cleaner?
 
 Ever used ChatGPT or Claude to write code and got this?
@@ -99,6 +101,12 @@ clean app.py
 ```
 
 ## 📸 Before & After
+
+1.Before :
+<img width="855" height="837" alt="Screenshot 2025-11-21 at 5 11 26 PM" src="https://github.com/user-attachments/assets/d3243173-0386-4661-b0fe-737a0183b6a5" />
+
+2.After :
+<img width="855" height="837" alt="Screenshot 2025-11-21 at 5 12 43 PM" src="https://github.com/user-attachments/assets/17a82f2f-8792-46c2-b99d-a420eb47f3d9" />
 
 ### Example 1: Cleaning AI Code
 
