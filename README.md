@@ -138,7 +138,6 @@ def process_data(data, threshold):
     return sum(filtered) / len(filtered)
 ```
 
-More examples in [`examples/`](examples/) folder.
 
 ## 🎯 Use Cases
 
@@ -215,7 +214,6 @@ python clean --help
 doskey clean=python "C:\path\to\clean" $*
 ```
 
-See [SETUP.md](SETUP.md) for detailed instructions.
 
 ## 🤝 Contributing
 
@@ -229,7 +227,6 @@ We love contributions! Here's how:
 6. Push (`git push origin feature/amazing`)
 7. Open a Pull Request
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## 📝 License
 
@@ -261,12 +258,6 @@ MIT License - see [LICENSE](LICENSE) file.
 - [ ] Integration with GitHub Actions
 
 Want to help? Check out [open issues](https://github.com/atharva-badgujar/code-cleaner/issues)!
-
-## 💖 Acknowledgments
-
-- Built with Python's AST for accurate parsing
-- Inspired by the need to clean AI-generated code
-- Thanks to all [contributors](https://github.com/atharva-badgujar/code-cleaner/graphs/contributors)!
 
 ## 📧 Contact
 
