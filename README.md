@@ -2,7 +2,7 @@
 
 **One command to clean your code.** Remove AI-generated comments, add documentation, or format code properly.
 
-[![GitHub Stars](https://img.shields.io/github/stars/yourusername/code-cleaner?style=social)](https://github.com/yourusername/code-cleaner)
+[![GitHub Stars](https://img.shields.io/github/stars/atharva-badgujar/code-cleaner?style=social)](https://github.com/atharva-badgujar/code-cleaner)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -51,7 +51,7 @@ Clean, professional, production-ready! ✨
 ### Install
 
 ```bash
-git clone https://github.com/yourusername/code-cleaner.git
+git clone https://github.com/atharva-badgujar/code-cleaner.git
 cd code-cleaner
 ./install.sh
 ```
@@ -170,7 +170,7 @@ Clean up tutorial code with excessive explanatory comments.
 | Rust       | ✅             | ✅           | ✅     |
 | PHP        | ✅             | ✅           | ✅     |
 
-Want another language? [Open an issue!](https://github.com/yourusername/code-cleaner/issues)
+Want another language? [Open an issue!](https://github.com/atharva-badgujar/code-cleaner/issues)
 
 ## 📋 Commands Reference
 
@@ -239,16 +239,16 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ## 🐛 Issues & Support
 
-- 🐛 [Report a bug](https://github.com/yourusername/code-cleaner/issues/new?labels=bug)
-- 💡 [Request a feature](https://github.com/yourusername/code-cleaner/issues/new?labels=enhancement)
-- ❓ [Ask a question](https://github.com/yourusername/code-cleaner/discussions)
+- 🐛 [Report a bug](https://github.com/atharva-badgujar/code-cleaner/issues/new?labels=bug)
+- 💡 [Request a feature](https://github.com/atharva-badgujar/code-cleaner/issues/new?labels=enhancement)
+- ❓ [Ask a question](https://github.com/atharva-badgujar/code-cleaner/discussions)
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/code-cleaner)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/code-cleaner)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/code-cleaner)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/code-cleaner)
+![GitHub stars](https://img.shields.io/github/stars/atharva-badgujar/code-cleaner)
+![GitHub forks](https://img.shields.io/github/forks/atharva-badgujar/code-cleaner)
+![GitHub issues](https://img.shields.io/github/issues/atharva-badgujar/code-cleaner)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/atharva-badgujar/code-cleaner)
 
 ## 🎯 Roadmap
 
@@ -260,26 +260,25 @@ MIT License - see [LICENSE](LICENSE) file.
 - [ ] AI-powered smart comments
 - [ ] Integration with GitHub Actions
 
-Want to help? Check out [open issues](https://github.com/yourusername/code-cleaner/issues)!
+Want to help? Check out [open issues](https://github.com/atharva-badgujar/code-cleaner/issues)!
 
 ## 💖 Acknowledgments
 
 - Built with Python's AST for accurate parsing
 - Inspired by the need to clean AI-generated code
-- Thanks to all [contributors](https://github.com/yourusername/code-cleaner/graphs/contributors)!
+- Thanks to all [contributors](https://github.com/atharva-badgujar/code-cleaner/graphs/contributors)!
 
 ## 📧 Contact
 
-- **Author:** Your Name
-- **Email:** your.email@example.com
-- **GitHub:** [@yourusername](https://github.com/yourusername)
-- **Twitter:** [@yourusername](https://twitter.com/yourusername)
+- **Author:** Atharva Badgujar
+- **Email:** atharvabadgujar1924@gmail.com
+- **GitHub:** [@atharva-badgujar](https://github.com/atharva-badgujar)
 
 ## ⭐ Show Your Support
 
 Give a ⭐️ if this project helped you!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/code-cleaner&type=Date)](https://star-history.com/#yourusername/code-cleaner&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=atharva-badgujar/code-cleaner&type=Date)](https://star-history.com/#atharva-badgujar/code-cleaner&Date)
 
 ---
 
