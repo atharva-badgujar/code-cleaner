@@ -53,6 +53,7 @@ Clean, professional, production-ready! ✨
 ```bash
 git clone https://github.com/atharva-badgujar/code-cleaner.git
 cd code-cleaner
+chmod +x install.sh
 ./install.sh
 ```
 
