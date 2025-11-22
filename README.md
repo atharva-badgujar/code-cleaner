@@ -278,7 +278,7 @@ Want to help? Check out [open issues](https://github.com/atharva-badgujar/code-c
 
 Give a ⭐️ if this project helped you!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=atharva-badgujar/code-cleaner&type=Date)](https://star-history.com/#atharva-badgujar/code-cleaner&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=atharva-badgujar/code-cleaner&type=Date)](https://star-history.com/atharva-badgujar/code-cleaner&Date)
 
 ---
 
