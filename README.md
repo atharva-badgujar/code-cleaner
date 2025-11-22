@@ -7,47 +7,6 @@
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-<img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
-
-## Why Code Cleaner?
-
-Ever used ChatGPT or Claude to write code and got this?
-
-```python
-# This function adds two numbers together
-def add(a, b):
-    # First we add a and b
-    result = a + b  # Store in result variable
-    # Now return the result
-    return result  # This returns the sum
-```
-
-**Clean it in one command:**
-
-```bash
-clean app.py
-```
-
-**Result:**
-
-```python
-def add(a, b):
-    result = a + b
-    return result
-```
-
-Clean, professional, production-ready! ✨
-
-## ✨ Features
-
-- 🗑️ **Remove Comments** - Strip verbose AI-generated comments
-- 📝 **Add Comments** - Automatically document undocumented code
-- 🎨 **Format Code** - Professional formatting across all files
-- 🌍 **8 Languages** - Python, JavaScript, TypeScript, Java, C/C++, Go, Rust, PHP
-- 🚀 **Git Integration** - Commit and push in one command
-- 💡 **Interactive Mode** - No need to remember commands
-- ⚡ **Fast** - Process entire projects in seconds
-
 ## 🚀 Quick Start
 
 ### Install
@@ -99,6 +58,48 @@ clean . push
 # Process specific file
 clean app.py
 ```
+
+<img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
+
+## Why Code Cleaner?
+
+Ever used ChatGPT or Claude to write code and got this?
+
+```python
+# This function adds two numbers together
+def add(a, b):
+    # First we add a and b
+    result = a + b  # Store in result variable
+    # Now return the result
+    return result  # This returns the sum
+```
+
+**Clean it in one command:**
+
+```bash
+clean app.py
+```
+
+**Result:**
+
+```python
+def add(a, b):
+    result = a + b
+    return result
+```
+
+Clean, professional, production-ready! ✨
+
+## ✨ Features
+
+- 🗑️ **Remove Comments** - Strip verbose AI-generated comments
+- 📝 **Add Comments** - Automatically document undocumented code
+- 🎨 **Format Code** - Professional formatting across all files
+- 🌍 **8 Languages** - Python, JavaScript, TypeScript, Java, C/C++, Go, Rust, PHP
+- 🚀 **Git Integration** - Commit and push in one command
+- 💡 **Interactive Mode** - No need to remember commands
+- ⚡ **Fast** - Process entire projects in seconds
+
 
 ## 📸 Before & After
 
