@@ -9,7 +9,7 @@
 
 ## 🚀 Quick Start
 
-### Install
+### Install (Mac & Linux)
 
 ```bash
 git clone https://github.com/atharva-badgujar/code-cleaner.git
@@ -19,11 +19,11 @@ chmod +x install.sh
 ```
 
 Windows:
-
+```bash
 cmdgit clone https://github.com/atharva-badgujar/code-cleaner.git
 cd code-cleaner
 install.bat
-
+```
 
 ### Use
 
