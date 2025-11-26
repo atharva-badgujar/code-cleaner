@@ -31,6 +31,7 @@ install.bat
 clean              # Interactive mode (easiest!)
 clean .            # Clean current folder
 clean app.py       # Clean single file
+clean system       # Clean npm cache 
 ```
 
 That's it! 🎉
@@ -41,6 +42,35 @@ That's it! 🎉
 
 ```bash
 clean
+```
+
+Code Cleaning Commands:
+```bash
+# Remove comments and format
+clean .
+
+# Add helpful comments
+clean . add
+
+# Clean and push to GitHub
+clean . push
+
+# Process specific file
+clean app.py
+```
+System Cleaning Commands:
+```bash
+# Find and clean orphaned node_modules
+clean system
+
+# Show all (including active projects)
+clean system --show
+
+# Auto-delete without confirmation
+clean system --auto
+
+# Search custom path
+clean system --path ~/Desktop
 ```
 
 The tool will ask you:
