@@ -80,20 +80,21 @@ The tool will ask you:
 
 Perfect for beginners!
 
-### Quick Commands
+### 📋 Complete Commands Reference
 
 ```bash
-# Remove comments and format
-clean .
-
-# Add helpful comments
-clean . add
-
-# Clean and push to GitHub
-clean . push
-
-# Process specific file
-clean app.py
+COMMAND              WHAT IT DOES
+-------              ------------
+clean                Interactive mode
+clean .              Clean current folder
+clean file.py        Clean single file
+clean . add          Add helpful comments
+clean . push         Clean and push to git
+clean --help         Show help
+clean system         Find orphaned node_modules
+clean system --show  Show all including active
+clean system --auto  Auto-delete (no confirm)
+clean system --path  Custom search path
 ```
 
 <img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
