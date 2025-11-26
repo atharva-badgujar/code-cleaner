@@ -9,7 +9,7 @@
 
 ## 🚀 Quick Start
 
-### Install
+### Install (Mac & Linux)
 
 ```bash
 git clone https://github.com/atharva-badgujar/code-cleaner.git
@@ -18,12 +18,20 @@ chmod +x install.sh
 ./install.sh
 ```
 
+Windows:
+```bash
+cmdgit clone https://github.com/atharva-badgujar/code-cleaner.git
+cd code-cleaner
+install.bat
+```
+
 ### Use
 
 ```bash
 clean              # Interactive mode (easiest!)
 clean .            # Clean current folder
 clean app.py       # Clean single file
+clean system       # Clean npm cache 
 ```
 
 That's it! 🎉
@@ -36,15 +44,7 @@ That's it! 🎉
 clean
 ```
 
-The tool will ask you:
-1. What folder/file to process
-2. What mode (clean/add/format)
-3. Whether to push to GitHub
-
-Perfect for beginners!
-
-### Quick Commands
-
+Code Cleaning Commands:
 ```bash
 # Remove comments and format
 clean .
@@ -57,6 +57,44 @@ clean . push
 
 # Process specific file
 clean app.py
+```
+System Cleaning Commands:
+```bash
+# Find and clean orphaned node_modules
+clean system
+
+# Show all (including active projects)
+clean system --show
+
+# Auto-delete without confirmation
+clean system --auto
+
+# Search custom path
+clean system --path ~/Desktop
+```
+
+The tool will ask you:
+1. What folder/file to process
+2. What mode (clean/add/format)
+3. Whether to push to GitHub
+
+Perfect for beginners!
+
+### 📋 Complete Commands Reference
+
+```bash
+COMMAND              WHAT IT DOES
+-------              ------------
+clean                Interactive mode
+clean .              Clean current folder
+clean file.py        Clean single file
+clean . add          Add helpful comments
+clean . push         Clean and push to git
+clean --help         Show help
+clean system         Find orphaned node_modules
+clean system --show  Show all including active
+clean system --auto  Auto-delete (no confirm)
+clean system --path  Custom search path
 ```
 
 <img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
