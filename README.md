@@ -83,18 +83,41 @@ Perfect for beginners!
 ### 📋 Complete Commands Reference
 
 ```bash
-COMMAND              WHAT IT DOES
--------              ------------
-clean                Interactive mode
-clean .              Clean current folder
-clean file.py        Clean single file
-clean . add          Add helpful comments
-clean . push         Clean and push to git
-clean --help         Show help
-clean system         Find orphaned node_modules
-clean system --show  Show all including active
-clean system --auto  Auto-delete (no confirm)
-clean system --path  Custom search path
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  INTERACTIVE MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  clean                      Start interactive mode (easiest!)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  CODE CLEANING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  clean .                    Remove comments + format (current folder)
+  clean file.py              Clean single file
+  clean ./src                Clean specific folder
+  clean . add                Add helpful comments to code
+  clean file.py add          Add comments to specific file
+  clean . push               Clean code and push to GitHub
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  NPM CACHE CLEANING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  clean system               Smart clean npm cache
+  clean system --show        Show detailed file listing
+  clean system --verify      Verify and fix corrupted cache
+  clean system --force       Delete entire cache (use carefully!)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HELP & INFO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  clean --help               Show all commands and examples
+  clean -h                   Show help (short version)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SUPPORTED LANGUAGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Python, JavaScript, TypeScript, Java, C/C++, Go, Rust, PHP
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 <img width="855" height="613" alt="Screenshot 2025-11-21 at 5 01 15 PM" src="https://github.com/user-attachments/assets/d1cc031c-6ff8-4cd0-9eb4-8acf8211f4cb" />
@@ -219,18 +242,6 @@ Clean up tutorial code with excessive explanatory comments.
 
 Want another language? [Open an issue!](https://github.com/atharva-badgujar/code-cleaner/issues)
 
-## 📋 Commands Reference
-
-```bash
-COMMAND              WHAT IT DOES
--------              ------------
-clean                Interactive mode
-clean .              Clean current folder
-clean file.py        Clean single file
-clean . add          Add helpful comments
-clean . push         Clean and push to git
-clean --help         Show help
-```
 
 ## 🔧 Installation Details
 
