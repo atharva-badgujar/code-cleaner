@@ -523,7 +523,7 @@ class NPMCacheCleaner:
             except:
                 pass
     
-    def show_analysis(self, info: Dict):
+    def show_analysis(self, info: Dict, show_details: bool = False):
         """Display cache analysis"""
         print(f"\n{'='*70}")
         print("📊 NPM Cache Analysis")
@@ -542,8 +542,48 @@ class NPMCacheCleaner:
         
         print(f"\n💰 Estimated Recoverable Space: {self.format_size(stale_size)}")
         print(f"{'='*70}\n")
+        
+        # Show detailed listing if requested
+        if show_details and self.stale_packages:
+            print("STALE CACHE ENTRIES (Will be cleaned):")
+            print("-" * 70)
+            
+            # Group by parent directory for better readability
+            grouped = {}
+            for pkg in self.stale_packages[:50]:  # Show first 50
+                parent = pkg.parent.name
+                size = pkg.stat().st_size if pkg.exists() else 0
+                
+                if parent not in grouped:
+                    grouped[parent] = []
+                grouped[parent].append({
+                    'path': pkg,
+                    'size': size,
+                    'name': pkg.name[:40] + '...' if len(pkg.name) > 40 else pkg.name
+                })
+            
+            count = 1
+            for parent, items in list(grouped.items())[:20]:  # Show first 20 groups
+                total_group_size = sum(item['size'] for item in items)
+                print(f"\n{count}. Cache Group: {parent}")
+                print(f"   💾 Size: {self.format_size(total_group_size)}")
+                print(f"   📦 Files: {len(items)}")
+                
+                # Show first 3 files in group
+                for item in items[:3]:
+                    print(f"   📍 {item['path']}")
+                
+                if len(items) > 3:
+                    print(f"   ... and {len(items) - 3} more files")
+                
+                count += 1
+            
+            if len(self.stale_packages) > 50:
+                print(f"\n... and {len(self.stale_packages) - 50} more stale entries")
+            
+            print(f"\n{'='*70}\n")
     
-    def clean_cache(self, mode: str = 'smart') -> bool:
+    def clean_cache(self, mode: str = 'smart', show_progress: bool = True) -> bool:
         """Clean npm cache based on mode"""
         
         if mode == 'verify':
@@ -601,23 +641,44 @@ class NPMCacheCleaner:
                 print("Cancelled.")
                 return False
             
-            print("🧹 Cleaning stale entries...")
-            deleted = 0
+            print("\n🧹 Cleaning stale entries...")
             
-            for pkg in self.stale_packages:
+            if show_progress:
+                print("\nDeleting:")
+                print("-" * 70)
+            
+            deleted = 0
+            deleted_size = 0
+            
+            for i, pkg in enumerate(self.stale_packages, 1):
                 try:
                     if pkg.exists():
+                        size = pkg.stat().st_size
                         pkg.unlink()
                         deleted += 1
-                except:
-                    pass
+                        deleted_size += size
+                        
+                        if show_progress and i <= 20:  # Show first 20 deletions
+                            print(f"✓ Deleted: {pkg.name[:50]}")
+                            print(f"  💾 Freed: {self.format_size(size)}")
+                            print(f"  📍 {pkg.parent}")
+                            print()
+                except Exception as e:
+                    if show_progress:
+                        print(f"✗ Failed: {pkg.name[:50]} ({str(e)})")
             
+            if show_progress and len(self.stale_packages) > 20:
+                print(f"... and {len(self.stale_packages) - 20} more files deleted")
+            
+            print(f"\n{'='*70}")
             print(f"✓ Cleaned {deleted}/{len(self.stale_packages)} stale entries")
-            print(f"✓ Freed: {self.format_size(stale_size)}")
+            print(f"✓ Total Space Freed: {self.format_size(deleted_size)}")
+            print(f"{'='*70}")
             
             # Verify after cleaning
             print("\n🔍 Verifying cache integrity...")
             subprocess.run(['npm', 'cache', 'verify'], capture_output=True)
+            print("✓ Cache verified successfully")
             
             return True
         
@@ -742,7 +803,7 @@ def interactive_mode():
             print("Make sure npm is installed: npm --version")
             return
         
-        cleaner.show_analysis(info)
+        cleaner.show_analysis(info, show_details=True)
         
         print("\nCleaning options:")
         print("1. Smart clean (remove stale, keep active)")
@@ -754,7 +815,7 @@ def interactive_mode():
         mode_map = {'1': 'smart', '2': 'verify', '3': 'force'}
         mode = mode_map.get(clean_choice, 'smart')
         
-        cleaner.clean_cache(mode)
+        cleaner.clean_cache(mode, show_progress=True)
         
         return
     
@@ -829,6 +890,7 @@ CODE CLEANING:
 
 NPM CACHE CLEANING:
   clean system             Smart clean npm cache
+  clean system --show      Show detailed file listing
   clean system --verify    Verify and fix corrupted cache
   clean system --force     Delete entire cache (like npm cache clean --force)
 
@@ -889,6 +951,8 @@ def handle_system_clean(args: List[str]):
     
     print("\n📦 NPM Cache Cleaner\n")
     
+    show_details = '--show' in args or '--details' in args
+    
     cleaner = NPMCacheCleaner()
     info = cleaner.analyze_cache()
     
@@ -897,7 +961,7 @@ def handle_system_clean(args: List[str]):
         print("Make sure npm is installed: npm --version")
         return
     
-    cleaner.show_analysis(info)
+    cleaner.show_analysis(info, show_details=show_details)
     
     # Determine mode
     mode = 'smart'
@@ -906,7 +970,7 @@ def handle_system_clean(args: List[str]):
     elif '--force' in args or '--all' in args:
         mode = 'force'
     
-    cleaner.clean_cache(mode)
+    cleaner.clean_cache(mode, show_progress=True)
 
 
 if __name__ == '__main__':
