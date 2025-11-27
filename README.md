@@ -261,8 +261,14 @@ python clean --help
 # Or create alias
 doskey clean=python "C:\path\to\clean" $*
 ```
+##Uninstallation:
+```bash
+rm -rf code-cleaner
+sudo rm /usr/local/bin/clean
 
-
+# To verify uninstallation :
+which clean
+```
 ## 🤝 Contributing
 
 We love contributions! Here's how:
